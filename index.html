@@ -1,0 +1,197 @@
+<div class="player-container">
+  <audio id="audio" controls src="https://github.com/u0024076/glass-crown/releases/download/v1.0/default.mp3"></audio>
+  <div class="lyrics-wrapper" id="lyrics-container"></div>
+</div>
+<style>
+body {
+  margin: 0;
+  padding: 20px;
+  background: #191919;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+}
+
+.player-container {
+  width: 100%;
+  max-width: 520px;
+  text-align: center;
+}
+
+audio {
+  width: 100%;
+  margin-bottom: 20px;
+  outline: none;
+}
+
+.lyrics-wrapper {
+  height: 380px;
+  overflow-y: hidden;
+  position: relative;
+  mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+}
+
+.lyric-line {
+  padding: 14px 10px;
+  transition: all 0.35s ease;
+  cursor: pointer;
+  opacity: 0.35;
+}
+
+/* 原文歌詞（韓/英） */
+.lyric-main {
+  font-size: 16px;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+/* 中文翻譯歌詞 */
+.lyric-sub {
+  font-size: 13px;
+  color: #a0a0a0;
+  line-height: 1.4;
+  letter-spacing: 0.5px;
+}
+
+/* 雙語同步發光高亮 */
+.lyric-line.active {
+  opacity: 1;
+  transform: scale(1.04);
+}
+
+.lyric-line.active .lyric-main {
+  color: #ffffff;
+  font-weight: 600;
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.75), 0 0 28px rgba(138, 180, 248, 0.5);
+}
+
+.lyric-line.active .lyric-sub {
+  color: #e0e0e0;
+  font-weight: 400;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+</style>
+<script>
+  // 雙語歌詞資料庫（原文 | 中文翻譯）
+const rawLyrics = `
+[00:13.16]거울 앞에 비친 완벽한 모습 | 鏡子前 那副天衣無縫的樣子
+[00:16.27]사람들이 원했던 미소를 지어내 | 擠出了 眾人期待已久的笑容
+[00:20.34]Every single scar I just have to hide | 每一道傷痕 都得好好藏起
+[00:23.45]아무렇지 않은 듯 두 눈을 감지 | 閉上眼 裝作什麼都沒發生過
+[00:27.44]유리 왕관이 나를 짓눌러도 | 就算玻璃王冠 壓得我快要碎裂
+[00:30.79]더 높이 올라가야 해 숨이 막혀도 | 就算喘不過氣 也得往更高處爬
+[00:33.59]Nobody sees me, nobody knows | 沒有人看見我 沒有人真的懂
+[00:38.21]I'm falling down, but I can't let it go | 我正往下墜 卻怎麼也鬆不了手
+[00:41.80]가짜 빛이 날 집어삼켜도 | 就算虛假的光 將我整個吞沒
+[00:45.15]하얀 드레스에 검은 얼룩이 번져 | 純白禮服上 黑色污漬正悄然蔓延
+[00:48.98]Tear off the crown, tell me what you see | 扯下這頂王冠 告訴我你看見了什麼
+[00:52.34]더럽혀진 날 구하려 하지 마 | 別想拯救 這個早已骯髒的我
+[01:02.31]Set... me... free | 放我走…
+[01:11.32]새벽 세 시, 연습실 불을 켜고 | 凌晨三點 練習室的燈又亮起
+[01:14.20]눈물마저 삼켜내 | 連眼淚 都得硬生生吞下
+[01:18.03]Another dirty deal made in the dark | 黑暗中 又一筆見不得人的交易
+[01:21.14]돌아갈 길은 없어 | 早已沒有回頭的路
+[01:24.73]머리 위 왕관이 날 짓눌러도 | 就算頭頂的王冠 快要將我壓垮
+[01:28.32]계속 올라가야 해 숨이 막혀도 | 就算喘不過氣 也得繼續往上爬
+[01:32.23]Nobody sees me, nobody knows | 沒有人看見我 沒有人真的懂
+[01:34.62]I'm falling down, but I can't let it go | 我正往下墜 卻怎麼也鬆不了手
+[01:39.17]가짜 빛이 날 집어삼켜도 | 就算虛假的光 將我整個吞沒
+[01:42.44]하얀 드레스에 검은 얼룩이 번져 | 純白禮服上 黑色污漬正悄然蔓延
+[01:46.27]Tear off the crown, tell me what you see | 扯下這頂王冠 告訴我你看見了什麼
+[01:49.62]더럽혀진 날 구하려 하지 마 | 別想拯救 這個早已骯髒的我
+[01:59.68]Set... me... free | 讓我走…
+[02:08.21]너의 따뜻한 손길이 닿을 듯해 | 你溫暖的手 似乎就要碰到我
+[02:11.56]그 손끝이 오기 전에 재로 흩어져 | 指尖觸及之前 我已化為灰燼散去
+[02:15.79]Drowning in the deep end, breathing slow | 沉入深處 呼吸漸漸放慢
+[02:20.10]Don't look at my fading glow | 別看我 這道正在熄滅的微光
+[02:29.20]가짜 빛이 날 집어삼켜도 | 就算虛假的光 將我整個吞沒
+[02:32.55]하얀 드레스에 검은 얼룩이 번져 | 純白禮服上 黑色污漬正悄然蔓延
+[02:35.82]Tear off the crown, tell me what you see | 扯下這頂王冠 告訴我你看見了什麼
+[02:39.81]더럽혀진 날 구하려 하지 마 | 別想拯救 這個早已骯髒的我
+[02:49.78]Set... me... free | 求你 放我自由…
+[02:57.84]지워지지 않는 얼룩을 품은 채 | 懷抱著 洗不掉的痕跡
+[03:02.23]거울 속의 나는 아직 웃고 있지 | 鏡子裡的我 卻依然笑著
+[03:12.44]Is this who I'm supposed to be? | 這真的是 我該成為的樣子嗎?
+[03:18.19]I sold it all, but I will never be free | 典當了一切 卻永遠換不回自由
+`;
+
+// 解析雙語 LRC
+const lyricsData = [];
+const timeExp = /\[(\d{2}):(\d{2}\.\d{2})\]/;
+
+rawLyrics.trim().split('\n').forEach(line => {
+  const match = timeExp.exec(line);
+  if (match) {
+    const time = parseInt(match[1]) * 60 + parseFloat(match[2]);
+    const content = line.replace(timeExp, '').trim();
+    const parts = content.split('|').map(s => s.trim());
+    lyricsData.push({
+      time,
+      main: parts[0] || '',
+      sub: parts[1] || ''
+    });
+  }
+});
+
+// 渲染雙語 DOM
+const container = document.getElementById('lyrics-container');
+if (container) {
+  container.innerHTML = '';
+
+  lyricsData.forEach((item, index) => {
+    const div = document.createElement('div');
+    div.className = 'lyric-line';
+    div.id = `line-${index}`;
+    
+    const pMain = document.createElement('div');
+    pMain.className = 'lyric-main';
+    pMain.innerText = item.main;
+    div.appendChild(pMain);
+    
+    if (item.sub) {
+      const pSub = document.createElement('div');
+      pSub.className = 'lyric-sub';
+      pSub.innerText = item.sub;
+      div.appendChild(pSub);
+    }
+    
+    div.onclick = () => { 
+      const audio = document.getElementById('audio');
+      if (audio) audio.currentTime = item.time; 
+    };
+    container.appendChild(div);
+  });
+}
+
+// 監聽播放進度
+const audio = document.getElementById('audio');
+let currentIndex = -1;
+
+if (audio && container) {
+  audio.addEventListener('timeupdate', () => {
+    const curTime = audio.currentTime;
+    let index = lyricsData.findIndex((item, i) => {
+      const nextTime = lyricsData[i + 1] ? lyricsData[i + 1].time : Infinity;
+      return curTime >= item.time && curTime < nextTime;
+    });
+
+    if (index !== -1 && index !== currentIndex) {
+      if (currentIndex !== -1) {
+        const prevLine = document.getElementById(`line-${currentIndex}`);
+        if (prevLine) prevLine.classList.remove('active');
+      }
+      const curLine = document.getElementById(`line-${index}`);
+      if (curLine) {
+        curLine.classList.add('active');
+        const offset = curLine.offsetTop - container.offsetHeight / 2 + curLine.offsetHeight / 2;
+        container.scrollTo({ top: offset, behavior: 'smooth' });
+      }
+      currentIndex = index;
+    }
+  });
+}
+  </script>
+
+  
