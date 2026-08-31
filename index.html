@@ -1,80 +1,87 @@
-<div class="player-container">
-  <audio id="audio" controls src="https://github.com/u0024076/glass-crown/releases/download/v1.0/default.mp3"></audio>
-  <div class="lyrics-wrapper" id="lyrics-container"></div>
-</div>
-<style>
-body {
-  margin: 0;
-  padding: 20px;
-  background: #191919;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-}
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glass Crown</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #191919;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+    }
 
-.player-container {
-  width: 100%;
-  max-width: 520px;
-  text-align: center;
-}
+    .player-container {
+      width: 100%;
+      max-width: 520px;
+      text-align: center;
+    }
 
-audio {
-  width: 100%;
-  margin-bottom: 20px;
-  outline: none;
-}
+    audio {
+      width: 100%;
+      margin-bottom: 20px;
+      outline: none;
+    }
 
-.lyrics-wrapper {
-  height: 380px;
-  overflow-y: hidden;
-  position: relative;
-  mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-  -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-}
+    .lyrics-wrapper {
+      height: 380px;
+      overflow-y: hidden;
+      position: relative;
+      mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+      -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+    }
 
-.lyric-line {
-  padding: 14px 10px;
-  transition: all 0.35s ease;
-  cursor: pointer;
-  opacity: 0.35;
-}
+    .lyric-line {
+      padding: 14px 10px;
+      transition: all 0.35s ease;
+      cursor: pointer;
+      opacity: 0.35;
+    }
 
-/* 原文歌詞（韓/英） */
-.lyric-main {
-  font-size: 16px;
-  line-height: 1.4;
-  margin-bottom: 4px;
-}
+    .lyric-main {
+      font-size: 16px;
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
 
-/* 中文翻譯歌詞 */
-.lyric-sub {
-  font-size: 13px;
-  color: #a0a0a0;
-  line-height: 1.4;
-  letter-spacing: 0.5px;
-}
+    .lyric-sub {
+      font-size: 13px;
+      color: #a0a0a0;
+      line-height: 1.4;
+      letter-spacing: 0.5px;
+    }
 
-/* 雙語同步發光高亮 */
-.lyric-line.active {
-  opacity: 1;
-  transform: scale(1.04);
-}
+    .lyric-line.active {
+      opacity: 1;
+      transform: scale(1.04);
+    }
 
-.lyric-line.active .lyric-main {
-  color: #ffffff;
-  font-weight: 600;
-  text-shadow: 0 0 16px rgba(255, 255, 255, 0.75), 0 0 28px rgba(138, 180, 248, 0.5);
-}
+    .lyric-line.active .lyric-main {
+      color: #ffffff;
+      font-weight: 600;
+      text-shadow: 0 0 16px rgba(255, 255, 255, 0.75), 0 0 28px rgba(138, 200, 255, 0.5);
+    }
 
-.lyric-line.active .lyric-sub {
-  color: #e0e0e0;
-  font-weight: 400;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-}
-</style>
-<script>
-  // 雙語歌詞資料庫（原文 | 中文翻譯）
+    .lyric-line.active .lyric-sub {
+      color: #e0e0e0;
+      font-weight: 400;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="player-container">
+    <audio id="audio" controls src="https://github.com/u0024076/glass-crown/releases/download/v1.0/default.mp3"></audio>
+    <div class="lyrics-wrapper" id="lyrics-container"></div>
+  </div>
+
+  <script>
+    // 雙語歌詞資料庫（原文 | 中文翻譯）
 const rawLyrics = `
 [00:13.16]거울 앞에 비친 완벽한 모습 | 鏡子前 那副天衣無縫的樣子
 [00:16.27]사람들이 원했던 미소를 지어내 | 擠出了 眾人期待已久的笑容
@@ -193,5 +200,5 @@ if (audio && container) {
   });
 }
   </script>
-
-  
+</body>
+</html>
